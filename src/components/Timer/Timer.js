@@ -1,39 +1,42 @@
 import styles from './Timer.module.scss';
 import Button from '../Button/Button';
 import FormattedTime from '../FormattedTime/FormattedTime';
-import { useState, useRef } from "react";
+import { useState, useEffect } from "react";
 
 
 const Timer = () => {
 
-  const [timer, setTimer] = useState(0)
-  const [isActive, setIsActive] = useState(false)
-  const [isPaused, setIsPaused] = useState(false)
-  const countRef = useRef(null)
+  const [timeValue, setTimeValue] = useState(0);
+  const [timer, setTimer] = useState(null);
 
   const handleStart = () => {
-    setIsActive(true)
-    setIsPaused(true)
-    countRef.current = setInterval(() => {
-      setTimer((timer) => timer + 1)
-    }, 1000)
-  }
+    timer && clearInterval(timer);
+    setTimer(setInterval(() => {
+      setTimeValue((value) => value + 10)
+    }, 10));
+  };
 
   const handlePause = () => {
-    clearInterval(countRef.current)
-    setIsPaused(false)
+   clearInterval(timer)
   }
 
   const handleReset = () => {
-    clearInterval(countRef.current)
-    setIsActive(false)
-    setIsPaused(false)
-    setTimer(0)
+    clearInterval(timer);
+    setTimer(null);
+    setTimeValue(0);
   }
+
+  useEffect(() => {
+    return () => {
+      clearInterval(timer)
+      setTimer(null);
+    };
+  }, []);
+
 
   return (
     <div className={styles.timer}>
-      <FormattedTime time={timer}/>
+      <FormattedTime time={timeValue}/>
       <Button action={handleStart}>Start</Button>
       <Button action={handlePause}>Pause</Button>
       <Button action={handleReset}>Reset</Button>
